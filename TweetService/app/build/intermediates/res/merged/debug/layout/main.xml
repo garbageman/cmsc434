@@ -7,19 +7,9 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_vertical_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".AlarmCreateActivity" >
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/textView" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/textView2" />
+    tools:context=".AlarmCreateActivity"
+    android:id="@+id/main"
+    android:weightSum="1">
 
     <TextView
         android:layout_width="wrap_content"
@@ -79,8 +69,15 @@
 	        android:layout_height="wrap_content"
 	        android:text="@string/button"
 	        android:onClick="set" />
-	    
-	    <Button
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Preview"
+            android:id="@+id/button" />
+
+        <Button
 	        android:id="@+id/clear"
 	        style="@android:attr/buttonBarButtonStyle"
 	        android:layout_width="wrap_content"
@@ -90,5 +87,18 @@
 	
 	</LinearLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Preview"
+        android:id="@+id/textView2"
+        android:paddingTop="50dp" />
+
+    <TextView
+        android:layout_width="350dp"
+        android:layout_height="match_parent"
+        android:text="New Text"
+        android:id="@+id/textView" />
+
 </LinearLayout>
-<!-- From: file:/Users/josephmasison/Desktop/TweetService/app/src/main/res/layout/main.xml -->
+<!-- From: file:/Users/josephmasison/Desktop/434git/TweetService/app/src/main/res/layout/main.xml -->

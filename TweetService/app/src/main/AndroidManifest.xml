@@ -17,7 +17,7 @@
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Holo.Light" >
         <activity
-            android:name="course.labs.alarmslab.AlarmCreateActivity"
+            android:name="course.labs.alarmslab.ChooseMedia"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,7 +25,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
+        <activity
+            android:name="course.labs.alarmslab.InstaActivity"
+            android:label="@string/in" >
+        </activity>
+        <activity
+            android:name="course.labs.alarmslab.PinActivity"
+            android:label="@string/pn" >
+        </activity>
+        <activity
+            android:name="course.labs.alarmslab.TwitterActivity"
+            android:label="@string/tw" >
+        </activity>
+        <activity
+            android:name="course.labs.alarmslab.FacebookActivity"
+            android:label="@string/fb" >
+        </activity>
+        <activity
+            android:name="course.labs.alarmslab.AlarmCreateActivity"
+            android:label="Post" >
+        </activity>
         <service android:name=".AlarmTweetService" >
         </service>
         
