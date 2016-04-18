@@ -1,12 +1,29 @@
 var url = chrome.extension.getURL('toolbar.html');
-var height = '70px';
+var height = '200px';
 var iframe = "<iframe src='"+url+"' id='myOwnCustomFirstToolbar12345' style='height:"+height+"'></iframe>";
 
 $('html').append(iframe);
 
-/*$('body').css({
-	'-webkit-transform': 'translateY('+height+')'
-});*/
+/* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown menu if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
 
 walk(document.body);
 setTimeout(function () {
@@ -49,4 +66,3 @@ function handleText(textNode)
 
 	textNode.nodeValue = v;
 }
-
