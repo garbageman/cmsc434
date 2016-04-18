@@ -47,6 +47,7 @@ public class AlarmCreateActivity extends Activity {
 
 	public void set(View v) {
 		String tweetText = mTweetTextView.getText().toString();
+		tweetText = tweetText.replace("Maryland", "Banana");
 
 		//TO/DO - Create an Intent to start the AlarmTweetService
 		Intent mAlarmTweetServiceIntent = new Intent(AlarmCreateActivity.this,
