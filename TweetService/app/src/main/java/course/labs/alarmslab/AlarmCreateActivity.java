@@ -9,6 +9,9 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.Random;
 
@@ -18,7 +21,8 @@ public class AlarmCreateActivity extends Activity {
 	private AlarmManager mAlarmManager;
 
 	private static final String TAG = "AlarmCreateActivity";
-	private EditText mTweetTextView, mDelayTextView;
+	private EditText mTweetTextView;
+	private TextView mPreviewText;
 	private int mID;
 
 	@Override
@@ -30,18 +34,23 @@ public class AlarmCreateActivity extends Activity {
 		mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
 		mTweetTextView = (EditText) findViewById(R.id.text);
-		mDelayTextView = (EditText) findViewById(R.id.time);
+		mPreviewText = (TextView) findViewById(R.id.previewText);
+	}
 
+	public void preview(View v) {
+		String tweetText = mTweetTextView.getText().toString();
+		String pText = tweetText.replace("Maryland", "Banana");
+
+		mPreviewText.setText(pText);
+		mPreviewText.setTextSize(24);
 	}
 
 	public void set(View v) {
 		String tweetText = mTweetTextView.getText().toString();
-		Long delay = Integer.parseInt(mDelayTextView.getText().toString()) * 1000L;
 
 		//TO/DO - Create an Intent to start the AlarmTweetService
 		Intent mAlarmTweetServiceIntent = new Intent(AlarmCreateActivity.this,
 				AlarmTweetService.class);
-		
 
 		//TO/DO - Add the tweet as an extra to the Intent
 		mAlarmTweetServiceIntent.putExtra(TWEET_STRING, tweetText);
@@ -68,16 +77,19 @@ public class AlarmCreateActivity extends Activity {
 		Log.d(TAG, Long.toString(System.currentTimeMillis()));
 		//TO/DO - Use the AlarmManager set method to set the Alarm
 
+		Long delay = 1000L;
 		mAlarmManager.set(
 				AlarmManager.ELAPSED_REALTIME,
 				SystemClock.elapsedRealtime() + delay,
 				pendingIntent);
 
+		Intent intent = new Intent(getApplicationContext(), TwitterActivity.class);
+		intent.putExtra(TWEET_STRING, tweetText);
+		startActivity(intent);
 	}
 
 	public void clear(View v) {
 		mTweetTextView.setText("");
-		mDelayTextView.setText("");
-
+		mPreviewText.setText("");
 	}
 }

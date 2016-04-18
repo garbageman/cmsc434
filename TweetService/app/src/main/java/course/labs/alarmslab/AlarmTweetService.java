@@ -84,6 +84,7 @@ public class AlarmTweetService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent i) {
+		Log.d("TAG", "onHandleIntent");
 		if (i.getExtras() != null) {
 
 			mRandom = new SecureRandom();
@@ -112,6 +113,7 @@ public class AlarmTweetService extends IntentService {
 		
 		@Override
 		protected void onPostExecute(Boolean result) {
+			Log.d("TAG", "onPostExecute");
 			//TO/DO - Display a toast saying "The Tweet was submitted with result:"
 			//and whether or not the background work was completed successfully.
 			Toast toast = Toast.makeText(
@@ -123,6 +125,7 @@ public class AlarmTweetService extends IntentService {
 	}
 
 	private static boolean postTweet(String status) throws IOException {
+		Log.d("TAG", "postTweet");
 		HttpsURLConnection connection = null;
 		String nonce = newNonce();
 		String timestamp = timestamp();
@@ -192,6 +195,7 @@ public class AlarmTweetService extends IntentService {
 	}
 
 	private static String read(HttpsURLConnection connection) {
+		Log.d("TAG", "read");
 		StringBuffer stringBuffer = new StringBuffer();
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -214,6 +218,7 @@ public class AlarmTweetService extends IntentService {
 	}
 
 	private static String newNonce() {
+		Log.d("TAG", "newNonce");
 		byte[] random = new byte[32];
 		mRandom.nextBytes(random);
 
@@ -224,12 +229,14 @@ public class AlarmTweetService extends IntentService {
 	}
 
 	private static String timestamp() {
+		Log.d("TAG", "timestamp");
 		Long time = System.currentTimeMillis() / 1000L;
 		return time.toString();
 	}
 
 	private static String signature(String status, String nonce,
 			String timestamp) {
+		Log.d("TAG", "signature");
 		String output = "";
 		// Obviously you can use a TreeMap with concurrency to implement this,
 		// but this way you can see what is going on

@@ -29,33 +29,6 @@
     </EditText>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:paddingTop="25dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/prompt" />
-
-        <EditText
-            android:id="@+id/time"
-            android:layout_width="15dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="number"
-            android:minLines="1"
-            android:text="@string/placeholder2" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/prompt2" />
-    </LinearLayout>
-    
-    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -64,22 +37,20 @@
 	    
 	    <Button
 	        android:id="@+id/set"
-	        style="@android:attr/buttonBarButtonStyle"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:text="@string/button"
 	        android:onClick="set" />
 
         <Button
-            style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Preview"
-            android:id="@+id/button" />
+            android:id="@+id/button"
+            android:onClick="preview"/>
 
         <Button
 	        android:id="@+id/clear"
-	        style="@android:attr/buttonBarButtonStyle"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:text="@string/clear"
@@ -97,7 +68,7 @@
     <TextView
         android:layout_width="350dp"
         android:layout_height="match_parent"
-        android:text="New Text"
-        android:id="@+id/textView" />
+        android:text="&quot;&quot;"
+        android:id="@+id/previewText" />
 
 </LinearLayout>

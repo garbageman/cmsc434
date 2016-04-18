@@ -25,7 +25,7 @@
 
         <Button
             android:layout_width="wrap_content"
-            
+
             android:layout_height="wrap_content"
             android:text="~"
             android:id="@+id/button" />
@@ -40,8 +40,13 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="43dp"
         android:text="Twitter"
         android:id="@+id/textView" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/feed" />
 
 </LinearLayout>
