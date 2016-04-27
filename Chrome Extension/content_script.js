@@ -1,13 +1,26 @@
-var url = chrome.extension.getURL('toolbar.html');
-var height = '50px';
-var iframe = "<iframe src='"+url+"' id='myOwnCustomFirstToolbar12345' style='height:"+height+"'></iframe>";
+ //var url = chrome.extension.getURL('popup.html');
+// var height = '50px';
+ //var iframe = "<iframe src='"+url+"' id='myOwnCustomFirstToolbar12345' style='height:"+height+"'></iframe>";
 
-$('html').append(iframe);
+ //$('html').append(iframe);
 
-walk(document.body);
-setTimeout(function () {
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+ if (request.action == "censor")
+   run1();
+ if (request.action == "refresh")
+   window.location.reload();
+});
+
+
+
+
+function run1()
+{
 	walk(document.body);
-}, 1000);
+	setTimeout(function () {
+	walk(document.body);
+	}, 1000);
+}
 
 function walk(node)
 {
@@ -44,8 +57,8 @@ function handleText(textNode)
 	var v = textNode.nodeValue;
 
   for (var i = 0; i < noun_arr.length; i++){
-    v = v.replace(noun_arr[i], "banana");
+    v = v.replace(noun_arr[i], "X~X~X~X~X~X~X");
   }
-
+	
 	textNode.nodeValue = v;
 }
