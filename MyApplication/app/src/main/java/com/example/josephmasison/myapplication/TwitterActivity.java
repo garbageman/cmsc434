@@ -81,23 +81,23 @@ public class TwitterActivity extends Activity {
 
         switch (selected) {
             case 0:
-                Log.i("TAG", Integer.toString(selected));
-                mImageView.setImageDrawable(resources.getDrawable(R.drawable.tw));
+                Log.i("Selected", Integer.toString(selected));
+                mImageView.setImageDrawable(resources.getDrawable(R.drawable.level0));
                 Toast.makeText(getApplicationContext(), "You're in the US", Toast.LENGTH_SHORT).show();
                 break;
             case 1:
-                Log.i("TAG", Integer.toString(selected));
-                mImageView.setImageDrawable(resources.getDrawable(R.drawable.face));
+                Log.i("Selected", Integer.toString(selected));
+                mImageView.setImageDrawable(resources.getDrawable(R.drawable.level1));
                 Toast.makeText(getApplicationContext(), "You're in Egypt", Toast.LENGTH_SHORT).show();
                 break;
             case 2:
-                Log.i("TAG", Integer.toString(selected));
-                mImageView.setImageDrawable(resources.getDrawable(R.drawable.ffeed));
+                Log.i("Selected", Integer.toString(selected));
+                mImageView.setImageDrawable(resources.getDrawable(R.drawable.level2));
                 Toast.makeText(getApplicationContext(), "You're in Russia", Toast.LENGTH_SHORT).show();
                 break;
             case 3:
-                Log.i("TAG", Integer.toString(selected));
-                mImageView.setImageDrawable(resources.getDrawable(R.drawable.in));
+                Log.i("Selected", Integer.toString(selected));
+                mImageView.setImageDrawable(resources.getDrawable(R.drawable.level3));
                 Toast.makeText(getApplicationContext(), "You're in China", Toast.LENGTH_SHORT).show();
                 break;
         }

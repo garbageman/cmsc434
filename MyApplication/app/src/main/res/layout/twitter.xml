@@ -32,12 +32,6 @@
 	
 	</LinearLayout>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="43dp"
-        android:text="Twitter"
-        android:id="@+id/textView" />
-
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
