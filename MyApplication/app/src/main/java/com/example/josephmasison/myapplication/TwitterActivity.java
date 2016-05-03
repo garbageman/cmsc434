@@ -4,12 +4,16 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -71,6 +75,33 @@ public class TwitterActivity extends Activity {
                 build_popup();
             }
         });
+
+        ImageView mImageView = (ImageView) findViewById(R.id.feed);
+        Resources resources = getResources();
+
+        switch (selected) {
+            case 0:
+                Log.i("TAG", Integer.toString(selected));
+                mImageView.setImageDrawable(resources.getDrawable(R.drawable.tw));
+                Toast.makeText(getApplicationContext(), "You're in the US", Toast.LENGTH_SHORT).show();
+                break;
+            case 1:
+                Log.i("TAG", Integer.toString(selected));
+                mImageView.setImageDrawable(resources.getDrawable(R.drawable.face));
+                Toast.makeText(getApplicationContext(), "You're in Egypt", Toast.LENGTH_SHORT).show();
+                break;
+            case 2:
+                Log.i("TAG", Integer.toString(selected));
+                mImageView.setImageDrawable(resources.getDrawable(R.drawable.ffeed));
+                Toast.makeText(getApplicationContext(), "You're in Russia", Toast.LENGTH_SHORT).show();
+                break;
+            case 3:
+                Log.i("TAG", Integer.toString(selected));
+                mImageView.setImageDrawable(resources.getDrawable(R.drawable.in));
+                Toast.makeText(getApplicationContext(), "You're in China", Toast.LENGTH_SHORT).show();
+                break;
+        }
+
     }
 
     private void build_popup() {
@@ -108,8 +139,6 @@ public class TwitterActivity extends Activity {
             }
         });
 
-        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-
         //for building Cancel button
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 
@@ -122,7 +151,7 @@ public class TwitterActivity extends Activity {
         AlertDialog al =builder.create();
         al.show();
     }
-
+/*
     @Override
     protected void onResume(){
         super.onResume();
