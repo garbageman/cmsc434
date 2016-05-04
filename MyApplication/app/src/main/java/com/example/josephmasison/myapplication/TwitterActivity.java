@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /*import org.apache.http.client.HttpClient;
@@ -50,6 +51,7 @@ public class TwitterActivity extends Activity {
     private ArrayList<String> tweets = new ArrayList<String>();
     int selected =0;
     int temp;String text="";
+    boolean changed_counrty = false;
 
 
     @Override
@@ -78,30 +80,40 @@ public class TwitterActivity extends Activity {
 
         ImageView mImageView = (ImageView) findViewById(R.id.feed);
         Resources resources = getResources();
+        mImageView.setImageDrawable(resources.getDrawable(R.drawable.level0));
 
+    }
+
+    private void update() {
+        ImageView mImageView = (ImageView) findViewById(R.id.feed);
+        Resources resources = getResources();
+        TextView textView = (TextView) findViewById(R.id.country);
         switch (selected) {
             case 0:
                 Log.i("Selected", Integer.toString(selected));
                 mImageView.setImageDrawable(resources.getDrawable(R.drawable.level0));
                 Toast.makeText(getApplicationContext(), "You're in the US", Toast.LENGTH_SHORT).show();
+                textView.setText("US");
                 break;
             case 1:
                 Log.i("Selected", Integer.toString(selected));
                 mImageView.setImageDrawable(resources.getDrawable(R.drawable.level1));
                 Toast.makeText(getApplicationContext(), "You're in Egypt", Toast.LENGTH_SHORT).show();
+                textView.setText("Egypt");
                 break;
             case 2:
                 Log.i("Selected", Integer.toString(selected));
                 mImageView.setImageDrawable(resources.getDrawable(R.drawable.level2));
                 Toast.makeText(getApplicationContext(), "You're in Russia", Toast.LENGTH_SHORT).show();
+                textView.setText("Russia");
                 break;
             case 3:
                 Log.i("Selected", Integer.toString(selected));
                 mImageView.setImageDrawable(resources.getDrawable(R.drawable.level3));
                 Toast.makeText(getApplicationContext(), "You're in China", Toast.LENGTH_SHORT).show();
+                textView.setText("China");
                 break;
         }
-
     }
 
     private void build_popup() {
@@ -121,7 +133,7 @@ public class TwitterActivity extends Activity {
             public void onClick(DialogInterface dialog, int which) {
                 selected = temp;
 
-                Log.i("TAG", Integer.toString(temp));
+                //Log.i("TAG", Integer.toString(temp));
                 switch (selected) {
                     case 0:
                         text = "0";
@@ -136,6 +148,7 @@ public class TwitterActivity extends Activity {
                         text = "3";
                         break;
                 }
+                update();
             }
         });
 
