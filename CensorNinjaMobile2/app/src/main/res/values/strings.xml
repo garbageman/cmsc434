@@ -2,12 +2,12 @@
     <string name="app_name">CensorNinjaMobile2</string>
     <string-array name="planets_array">
         <item>United States</item>
-        <item>North Korea</item>
-        <item>Saudia Arabia</item>
-        <item>Ethiopia</item>
-        <item>Vietnam</item>
-        <item>Iran</item>
-        <item>China</item>
         <item>Cuba</item>
+        <item>China</item>
+        <item>Iran</item>
+        <item>Vietnam</item>
+        <item>Ethiopia</item>
+        <item>Saudia Arabia</item>
+        <item>North Korea</item>
     </string-array>
 </resources>

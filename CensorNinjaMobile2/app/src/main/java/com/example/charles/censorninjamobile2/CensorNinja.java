@@ -9,6 +9,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -16,10 +17,17 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.crashlytics.android.Crashlytics;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
@@ -28,13 +36,17 @@ import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 import com.twitter.sdk.android.core.models.Search;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.services.SearchService;
+import com.twitter.sdk.android.core.services.StatusesService;
+import com.twitter.sdk.android.tweetui.FixedTweetTimeline;
 import com.twitter.sdk.android.tweetui.SearchTimeline;
 import com.twitter.sdk.android.tweetui.TimelineResult;
 import com.twitter.sdk.android.tweetui.TweetTimelineListAdapter;
 import com.twitter.sdk.android.tweetui.TweetViewAdapter;
+import com.twitter.sdk.android.tweetui.TwitterListTimeline;
 import com.twitter.sdk.android.tweetui.UserTimeline;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
@@ -48,7 +60,7 @@ public class CensorNinja extends AppCompatActivity {
     private TwitterLoginButton loginButton;
     private View loginButtonView;
     private CensorNinja self1 = this;
-    private String username;
+    private int censorship_level;
 
 
     @Override
@@ -57,8 +69,7 @@ public class CensorNinja extends AppCompatActivity {
         setContentView(R.layout.activity_censor_ninja);
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig), new TwitterCore(authConfig), new TweetComposer());
-
-        ListView listView = (ListView) findViewById(R.id.listView);
+        censorship_level = 8;
 
         //LOGIN BUTTON
         loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
@@ -67,13 +78,8 @@ public class CensorNinja extends AppCompatActivity {
         loginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
-                // The TwitterSession is also available through:
-                // Twitter.getInstance().core.getSessionManager().getActiveSession()
                 TwitterSession session = result.data;
-                //String msg = "@" + session.getUserName() + " logged in! (#" + session.getUserId() + ")";
                 Toast.makeText(getApplicationContext(), "Login Success!", Toast.LENGTH_SHORT).show();
-                username = session.getUserName();
-
             }
 
             @Override
@@ -81,35 +87,83 @@ public class CensorNinja extends AppCompatActivity {
                 Log.d("TwitterKit", "Login with Twitter failure", exception);
             }
         });
+        loginButtonView.performClick();
+
+        //HOME_TIMELINE
+        TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+        final StatusesService statusesService = twitterApiClient.getStatusesService();
+        final Callback cb = new Callback<List<Tweet>>() {
+            @Override
+            public void success(Result<List<Tweet>> result) {
+                ListView listView = (ListView) findViewById(R.id.listView);
+                List<Tweet> tweets = result.data;
+
+                //CENSORING ALGORITHM
+                List<Tweet> censoredtweets = new ArrayList<Tweet>();
+                for (Tweet t : tweets) {
+                    String msg = new String(t.text);
+                    String[] words = msg.split(" ");
+                    if (censorship_level != 8) {
+                        for (int j = 0; j < words.length; j += censorship_level) {
+                            String censored_word = "";
+                            for (int i = 0; i < words[j].length(); i++) {
+                                censored_word = censored_word + "\u2588";
+                            }
+                            msg = msg.replace(words[j], censored_word);
+                        }
+                    }
+
+                    censoredtweets.add(new Tweet(t.coordinates, t.createdAt, t.currentUserRetweet, t.entities,
+                            t.favoriteCount, t.favorited, t.filterLevel, t.id, t.idStr, t.inReplyToScreenName, t.inReplyToStatusId,
+                            t.inReplyToStatusIdStr, t.inReplyToUserId, t.inReplyToUserIdStr, t.lang, t.place,
+                            t.possiblySensitive, t.scopes, t.retweetCount, t.retweeted, t.retweetedStatus,
+                            t.source, msg, t.truncated, t.user, t.withheldCopyright, t.withheldInCountries, t.withheldScope));
+                }
+
+                FixedTweetTimeline ftTimeline = new FixedTweetTimeline.Builder().setTweets(censoredtweets).build();
+                TweetTimelineListAdapter adapter = new TweetTimelineListAdapter.Builder(self1).setTimeline(ftTimeline).build();
+                listView.setAdapter(adapter);
+            }
+
+            @Override
+            public void failure(TwitterException e) {
+                Log.e("CB", "callback failed");
+                Log.e("CB-FAIL",e.toString());
+            }
+        };
+        statusesService.homeTimeline(100, null, null, null, null, null, null, cb);
 
         //REFRESH
-        final SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        final UserTimeline timeline = new UserTimeline.Builder()
-                .screenName(username)
-                .build();
-        final TweetTimelineListAdapter adapter2 = new TweetTimelineListAdapter.Builder(self1).setTimeline(timeline).build();
-        listView.setAdapter(adapter2);
-
+        SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         assert swipeLayout != null;
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                ListView listView = (ListView) findViewById(R.id.listView);
+                SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
                 swipeLayout.setRefreshing(true);
-                adapter2.refresh(new Callback<TimelineResult<Tweet>>() {
+                TweetTimelineListAdapter adapter = (TweetTimelineListAdapter) listView.getAdapter();
+                adapter.refresh(new Callback<TimelineResult<Tweet>>() {
                     @Override
                     public void success(Result<TimelineResult<Tweet>> result) {
+                        //ListView listView = (ListView) findViewById(R.id.listView);
+                        statusesService.homeTimeline(100, null, null, null, null, null, null, cb);
+                        SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+                        //listView.invalidate();
+                        swipeLayout.invalidate();
+                        Log.e("SWIPELAYOUT", "refresh success!");
                         swipeLayout.setRefreshing(false);
                     }
 
                     @Override
                     public void failure(TwitterException exception) {
-                        // Toast or some other action
+                        Log.e("SWIPELAYOUT", "refresh failed!");
                     }
                 });
             }
         });
 
-        //POST BUTTON
+        //POST
         Button postButton = (Button) findViewById(R.id.postbutton);
         assert postButton != null;
         postButton.setOnClickListener(new View.OnClickListener() {
@@ -125,31 +179,33 @@ public class CensorNinja extends AppCompatActivity {
             }
         });
 
-        //SPINNER
+        //COUNTRY SELECT
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+        ArrayAdapter<CharSequence> adapterA = ArrayAdapter.createFromResource(this,
                 R.array.planets_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterA.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
+        spinner.setAdapter(adapterA);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                //ListView listView = (ListView) findViewById(R.id.listView);
+                Spinner spinner = (Spinner) findViewById(R.id.spinner);
+                censorship_level = 8 - position;
+                Toast.makeText(getApplicationContext(), spinner.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
+                statusesService.homeTimeline(100, null, null, null, null, null, null, cb);
+                SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+                //listView.invalidate();
+                swipeLayout.invalidate();
+            }
 
-        //CENSOR SWITCH
-        final Switch censorSwitch = (Switch) findViewById(R.id.switch1);
-        assert censorSwitch != null;
-        censorSwitch.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                censorSwitch.getThumbDrawable().setColorFilter(censorSwitch.isChecked() ? Color.argb(255, 85, 172, 238) : Color.WHITE, PorterDuff.Mode.MULTIPLY);
-                censorSwitch.getTrackDrawable().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
-                if(censorSwitch.isChecked()){
-                    Spinner spinner = (Spinner) findViewById(R.id.spinner);
-                    Toast.makeText(getApplicationContext(), "Browsing from: "+spinner.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
-                }
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                censorship_level = 8 - 0;
             }
         });
-
-        loginButtonView.performClick();
     }
 
     @Override
