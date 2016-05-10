@@ -7,16 +7,25 @@
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
  if (request.action == "censor")
    censor();
- if (request.action == "refresh")
-   window.location.reload();
+ if (request.action == "refresh") {
+   document = chrome.extension.dom;
+   document.body.appendChild(document.createElement('div'));
+ }
 });
 
 function censor()
 {
+  // console.log('This is sadness');
+  // console.log(document);
+  chrome.extension.dom = document.cloneNode(true);
+  // console.log('This is sadness');
+  // console.log(chrome.extension.dom);
 	walk(document.body);
 	setTimeout(function () {
-	walk(document.body);
+	  walk(document.body);
+    console.log(chrome.extension.dom);
 	}, 1000);
+
 }
 
 function walk(node)
