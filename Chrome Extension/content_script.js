@@ -1,45 +1,77 @@
- //var url = chrome.extension.getURL('popup.html');
-// var height = '50px';
- //var iframe = "<iframe src='"+url+"' id='myOwnCustomFirstToolbar12345' style='height:"+height+"'></iframe>";
-
- //$('html').append(iframe);
+/* This will save the document values */
+chrome.extension.savedText = [];
+chrome.extension.currentIndex = 0;
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
- if (request.action == "censor")
+ if (request.action == "censor") {
    censor();
+ }
  if (request.action == "refresh") {
-   document = chrome.extension.dom;
-   document.body.appendChild(document.createElement('div'));
+   restore();
+ }
+ if (request.action == "country") {
+   // console.log(request.country.options[request.country.selectedIndex]);
+   updateCensorship(request.country);
  }
 });
 
-function censor()
-{
-  // console.log('This is sadness');
-  // console.log(document);
-  chrome.extension.dom = document.cloneNode(true);
-  // console.log('This is sadness');
-  // console.log(chrome.extension.dom);
-	walk(document.body);
-	setTimeout(function () {
-	  walk(document.body);
-    console.log(chrome.extension.dom);
-	}, 1000);
+chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+  console.log(msg);
+});
 
+
+function restore() {
+  // console.log('Restoring content');
+  chrome.extension.currentIndex = 0;
+	setTimeout(function () {
+    chrome.extension.currentIndex = 0;
+    restoreTree(document.body);
+	}, 1000);
 }
 
-function walk(node)
-{
-	// Source: http://is.gd/mwZp7E
+/* This function restores the text for the document body */
+function restoreTree(node) {
+  var child, next;
 
-	var child, next;
-
-	switch ( node.nodeType )
-	{
+	switch ( node.nodeType ) {
 		case 1:  // Element
 		case 9:  // Document
 		case 11: // Document fragment
-			child = node.firstChild;
+      child = node.firstChild;
+			while ( child )
+			{
+				next = child.nextSibling;
+				restoreTree(child);
+				child = next;
+			}
+			break;
+
+		case 3: // Text node
+			restoreText(node);
+			break;
+	}
+}
+
+function restoreText(textNode) {
+	textNode.nodeValue = chrome.extension.savedText[chrome.extension.currentIndex];
+  chrome.extension.currentIndex = chrome.extension.currentIndex + 1;
+}
+
+/* This function removes words from the document body */
+function censor() {
+	setTimeout(function () {
+	  walk(document.body);
+	}, 1000);
+}
+
+function walk(node) {
+	var child, next;
+
+	switch ( node.nodeType ) {
+		case 1:  // Element
+		case 9:  // Document
+		case 11: // Document fragment
+      child = node.firstChild;
 			while ( child )
 			{
 				next = child.nextSibling;
@@ -54,14 +86,15 @@ function walk(node)
 	}
 }
 
-function handleText(textNode)
-{
+function handleText(textNode) {
   var noun_arr = Array("time","issue","year","side","people","kind","way","head","day","house","man","service","thing","friend","woman","father","life","power","child","hour","world"	,"game","school"	,"line","state"	,"end","family"	,"member","student"	,"law","group"	,"car","country"	,"city","problem"	,"community","hand"	,"name","part"	,"president","place"	,"team","case"	,"minute","week"	,"idea","company"	,"kid","system"	,"body","program"	,"information","question"	,"back","work"	,"parent","government" ,"face","number"	,"others","night"	,"level","Mr"	,"office","point"	,"door","home"	,"health","water"	,"person","room"	,"art","mother"	,"war","area"	,"history","money"	,"party","storey"	,"result","fact"	,"change","month"	,"morning","lot"	,"reason","right"	,"research","study"	,"girl","book"	,"guy","eye"	,"food","job"	,"moment","word"	,"air","business"	,"teacher");
-	var v = textNode.nodeValue;
+  /* Save the text value */
+  chrome.extension.savedText.push(textNode.nodeValue);
+  var v = textNode.nodeValue;
 
-  for (var i = 0; i < noun_arr.length; i++){
+  for (var i = 0; i < noun_arr.length; i++) {
     var s = "";
-		for (var j = 0; j < noun_arr[i].length; j++){
+		for (var j = 0; j < noun_arr[i].length; j++) {
 			s+= "■";
 		}
     v = v.replace(" "+noun_arr[i]+" ", " "+s+" ");
