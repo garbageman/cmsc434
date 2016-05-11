@@ -1,6 +1,10 @@
 /* This will save the document values */
 chrome.extension.savedText = [];
 chrome.extension.currentIndex = 0;
+chrome.extension.savedImages = [];
+chrome.extension.imageIndex = 0;
+
+var imgURL = 'http://science-all.com/images/banana/banana-02.jpg';
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
  if (request.action == "censor") {
@@ -21,11 +25,12 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
 
 
 function restore() {
-  // console.log('Restoring content');
-  chrome.extension.currentIndex = 0;
 	setTimeout(function () {
     chrome.extension.currentIndex = 0;
+    chrome.extension.imageIndex = 0;
     restoreTree(document.body);
+    chrome.extension.savedImages = [];
+    chrome.extension.savedText = [];
 	}, 1000);
 }
 
@@ -34,7 +39,12 @@ function restoreTree(node) {
   var child, next;
 
 	switch ( node.nodeType ) {
-		case 1:  // Element
+		case 1:
+    if (node.tagName === 'IMG') {
+      /* Replace image with another strange one */
+      // console.log('Found image');
+      restoreImage(node);
+    } // Element
 		case 9:  // Document
 		case 11: // Document fragment
       child = node.firstChild;
@@ -57,6 +67,11 @@ function restoreText(textNode) {
   chrome.extension.currentIndex = chrome.extension.currentIndex + 1;
 }
 
+function restoreImage(imageNode) {
+	imageNode.src = chrome.extension.savedImages[chrome.extension.imageIndex];
+  chrome.extension.imageIndex = chrome.extension.imageIndex + 1;
+}
+
 /* This function removes words from the document body */
 function censor() {
 	setTimeout(function () {
@@ -67,12 +82,12 @@ function censor() {
 function walk(node) {
 	var child, next;
 
-    console.log(node.tagName);
-
 	switch ( node.nodeType ) {
 		case 1:
-      if (node.tagName == 'IMG') {
-        console.log('Found image');
+      if (node.tagName === 'IMG') {
+        /* Replace image with another strange one */
+        // console.log('Found image');
+        replaceImage(node);
       }// Element
 		case 9:  // Document
 		case 11: // Document fragment
@@ -89,6 +104,11 @@ function walk(node) {
 			handleText(node);
 			break;
 	}
+}
+
+function replaceImage(imageNode) {
+  chrome.extension.savedImages.push(imageNode.src);
+  imageNode.src = imgURL;
 }
 
 function handleText(textNode) {
