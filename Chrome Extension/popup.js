@@ -19,7 +19,7 @@ chrome.runtime.sendMessage({ from : "popup", subject : "buttonState"}, function(
 	// console.log(countrySelector.options[response.selectValue].value);
 	// console.log(response);
 	if (response.buttonState) {
-		onoffswitch.checked = response.buttonState;
+		onoffswitch.value = response.buttonState;
   }
 });
 

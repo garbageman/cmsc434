@@ -67,8 +67,13 @@ function censor() {
 function walk(node) {
 	var child, next;
 
+    console.log(node.tagName);
+
 	switch ( node.nodeType ) {
-		case 1:  // Element
+		case 1:
+      if (node.tagName == 'IMG') {
+        console.log('Found image');
+      }// Element
 		case 9:  // Document
 		case 11: // Document fragment
       child = node.firstChild;
@@ -95,7 +100,7 @@ function handleText(textNode) {
   for (var i = 0; i < noun_arr.length; i++) {
     var s = "";
 		for (var j = 0; j < noun_arr[i].length; j++) {
-			s+= "■";
+			s+= "█";
 		}
     v = v.replace(" "+noun_arr[i]+" ", " "+s+" ");
   }
